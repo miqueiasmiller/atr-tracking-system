@@ -80,7 +80,6 @@
   <ItemGroup>
     <ClInclude Include="HistClient.h" />
     <ClInclude Include="HistoricalData.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HistClient.cpp" />
