@@ -14,10 +14,10 @@ public:
 	~HistClient();
 	historical_data_reply_t get_historical_data(historical_data_request_t const&);
 private:
-	const std::string request_queue_name = "servapp_historiador";
-	const std::string response_queue_name = "historiador_servapp";
+	static const char* const request_queue_name;
+	static const char* const response_queue_name;
 
-	boost::mutex rwMutex;
+	static boost::mutex rwMutex;
 
 	boost::interprocess::message_queue request_queue;
 	boost::interprocess::message_queue response_queue;
@@ -25,4 +25,3 @@ private:
 	void write_request_message(historical_data_request_t const&);
 	historical_data_reply_t read_response_message();
 };
-

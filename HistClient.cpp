@@ -1,22 +1,26 @@
 #include "HistClient.h"
 
-HistClient::HistClient() : 
-	request_queue(boost::interprocess::open_only, request_queue_name.c_str()),
-	response_queue(boost::interprocess::open_only, response_queue_name.c_str())
+const char* const HistClient::request_queue_name = "servapp_historiador";
+const char* const HistClient::response_queue_name = "historiador_servapp";
+boost::mutex HistClient::rwMutex;
+
+HistClient::HistClient() :
+	request_queue(boost::interprocess::open_only, request_queue_name),
+	response_queue(boost::interprocess::open_only, response_queue_name)
 {
 }
 
 
 HistClient::~HistClient()
 {
-	boost::interprocess::message_queue::remove(request_queue_name.c_str());
-	boost::interprocess::message_queue::remove(response_queue_name.c_str());
+	boost::interprocess::message_queue::remove(request_queue_name);
+	boost::interprocess::message_queue::remove(response_queue_name);
 }
 
 
 historical_data_reply_t HistClient::get_historical_data(historical_data_request_t const& request)
 {
-	boost::unique_lock<boost::mutex> lock(rwMutex);
+	boost::lock_guard<boost::mutex> lock(rwMutex);
 
 	write_request_message(request);
 
@@ -37,7 +41,7 @@ void HistClient::write_request_message(historical_data_request_t const& request)
 		throw std::exception("não implementado.");
 	}
 
-	// envia a mensagem (se o buffer estiver cheio, a thread fica bloqueada até que aja espaço).
+	// envia a mensagem (se o buffer estiver cheio, a thread fica bloqueada até que haja espaço).
 	request_queue.send(&request, sizeof(request), 0);
 }
 
