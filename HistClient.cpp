@@ -30,19 +30,21 @@ historical_data_reply_t HistClient::get_historical_data(historical_data_request_
 
 void HistClient::write_request_message(historical_data_request_t const& request)
 {
-	if (request.num_samples > MAX_POSITION_SAMPLES)
+	if (request.num_samples > 1 && request.num_samples <= MAX_POSITION_SAMPLES)
 	{
-		std::string const msg = "O número de amostras requisitadas é maior do que o máximo permitido [" + std::to_string(MAX_POSITION_SAMPLES) + "].";
-		throw std::exception(msg.c_str());
+		// envia a mensagem (se o buffer estiver cheio, a thread fica bloqueada até que haja espaço).
+		request_queue.send(&request, sizeof(request), 0);
 	}
 	else if (request.num_samples == 1)
 	{
 		// requisita do gateway via memória compartilhada.
 		throw std::exception("não implementado.");
 	}
-
-	// envia a mensagem (se o buffer estiver cheio, a thread fica bloqueada até que haja espaço).
-	request_queue.send(&request, sizeof(request), 0);
+	else
+	{
+		std::string const msg = "O número de amostras requisitadas não é válido. Este deve estar entre 1 e " + std::to_string(MAX_POSITION_SAMPLES) + ".";
+		throw std::exception(msg.c_str());
+	}
 }
 
 
