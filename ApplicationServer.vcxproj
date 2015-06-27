@@ -39,7 +39,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <NuGetPackageImportStamp>de1df570</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>b2c6e0df</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -59,6 +59,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>COPY $(TargetPath) "C:\Users\miqueias\Documents\TPFinal"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -80,10 +83,12 @@
   <ItemGroup>
     <ClInclude Include="HistClient.h" />
     <ClInclude Include="HistoricalData.h" />
+    <ClInclude Include="ProxyServer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HistClient.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ProxyServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -92,9 +97,10 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\boost.1.58.0.0\build\native\boost.targets" Condition="Exists('packages\boost.1.58.0.0\build\native\boost.targets')" />
     <Import Project="packages\boost_thread-vc120.1.58.0.0\build\native\boost_thread-vc120.targets" Condition="Exists('packages\boost_thread-vc120.1.58.0.0\build\native\boost_thread-vc120.targets')" />
-    <Import Project="packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets" Condition="Exists('packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets')" />
     <Import Project="packages\boost_date_time-vc120.1.58.0.0\build\native\boost_date_time-vc120.targets" Condition="Exists('packages\boost_date_time-vc120.1.58.0.0\build\native\boost_date_time-vc120.targets')" />
     <Import Project="packages\boost_chrono-vc120.1.58.0.0\build\native\boost_chrono-vc120.targets" Condition="Exists('packages\boost_chrono-vc120.1.58.0.0\build\native\boost_chrono-vc120.targets')" />
+    <Import Project="packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets" Condition="Exists('packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets')" />
+    <Import Project="packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets" Condition="Exists('packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -102,8 +108,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\boost.1.58.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost.1.58.0.0\build\native\boost.targets'))" />
     <Error Condition="!Exists('packages\boost_thread-vc120.1.58.0.0\build\native\boost_thread-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_thread-vc120.1.58.0.0\build\native\boost_thread-vc120.targets'))" />
-    <Error Condition="!Exists('packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets'))" />
     <Error Condition="!Exists('packages\boost_date_time-vc120.1.58.0.0\build\native\boost_date_time-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_date_time-vc120.1.58.0.0\build\native\boost_date_time-vc120.targets'))" />
     <Error Condition="!Exists('packages\boost_chrono-vc120.1.58.0.0\build\native\boost_chrono-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_chrono-vc120.1.58.0.0\build\native\boost_chrono-vc120.targets'))" />
+    <Error Condition="!Exists('packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets'))" />
+    <Error Condition="!Exists('packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_system-vc120.1.58.0.0\build\native\boost_system-vc120.targets'))" />
   </Target>
 </Project>

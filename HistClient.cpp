@@ -8,15 +8,9 @@ HistClient::HistClient() :
 	request_queue(boost::interprocess::open_only, request_queue_name),
 	response_queue(boost::interprocess::open_only, response_queue_name)
 {
+	std::cout << "Application Server - Request Queue opened." << std::endl;
+	std::cout << "Application Server - Response Queue opened." << std::endl;
 }
-
-
-HistClient::~HistClient()
-{
-	boost::interprocess::message_queue::remove(request_queue_name);
-	boost::interprocess::message_queue::remove(response_queue_name);
-}
-
 
 historical_data_reply_t HistClient::get_historical_data(historical_data_request_t const& request)
 {
@@ -55,7 +49,7 @@ historical_data_reply_t HistClient::read_response_message()
 	unsigned int priority;
 
 	// recebe a mensagem (se não existe mensage, a thread fica bloqueada).
-	response_queue.receive(&reply, sizeof(reply), received_size, priority);
+	response_queue.receive(&reply, sizeof(historical_data_reply_t), received_size, priority);
 
 	if (received_size != sizeof(reply))
 	{
