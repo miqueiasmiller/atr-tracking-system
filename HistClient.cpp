@@ -2,7 +2,7 @@
 
 const char* const HistClient::request_queue_name = "servapp_historiador";
 const char* const HistClient::response_queue_name = "historiador_servapp";
-boost::mutex HistClient::rwMutex;
+boost::mutex HistClient::m;
 
 HistClient::HistClient() :
 	request_queue(boost::interprocess::open_only, request_queue_name),
@@ -13,9 +13,9 @@ HistClient::HistClient() :
 }
 
 
-historical_data_reply_t HistClient::get_historical_data(historical_data_request_t const& request)
+historical_data_reply_t HistClient::get_historical_data(const historical_data_request_t & request)
 {
-	boost::lock_guard<boost::mutex> lock(rwMutex);
+	boost::lock_guard<boost::mutex> lock(m);
 
 	write_request_message(request);
 
@@ -23,7 +23,7 @@ historical_data_reply_t HistClient::get_historical_data(historical_data_request_
 }
 
 
-void HistClient::write_request_message(historical_data_request_t const& request)
+void HistClient::write_request_message(const historical_data_request_t & request)
 {
 	if (request.num_samples > 1 && request.num_samples <= MAX_POSITION_SAMPLES)
 	{
