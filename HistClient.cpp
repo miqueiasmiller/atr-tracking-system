@@ -12,6 +12,7 @@ HistClient::HistClient() :
 	std::cout << "Application Server - Response Queue opened." << std::endl;
 }
 
+
 historical_data_reply_t HistClient::get_historical_data(historical_data_request_t const& request)
 {
 	boost::lock_guard<boost::mutex> lock(rwMutex);

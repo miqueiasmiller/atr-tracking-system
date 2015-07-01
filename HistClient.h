@@ -12,6 +12,7 @@ class HistClient
 public:
 	HistClient();
 	historical_data_reply_t get_historical_data(historical_data_request_t const&);
+
 private:
 	static const char* const request_queue_name;
 	static const char* const response_queue_name;

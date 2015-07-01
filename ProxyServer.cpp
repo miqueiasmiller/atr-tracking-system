@@ -1,41 +1,58 @@
 #include "ProxyServer.h"
-#include "boost/algorithm/string.hpp"
-#include "boost/bind.hpp"
-#include "boost/thread.hpp"
-#include <iostream>
 
 ProxyServer::ProxyServer(const int port) :
-service(),
-acceptor(service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+	tcp_service(),
+	worker_service(),
+	tcp_acceptor(tcp_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+	worker(worker_service),
+	historiador()
 {
-	std::cout << "Application Server - Listening on " << acceptor.local_endpoint() << std::endl;
+	start_threadpool();
+
+	std::cout << "Application Server - Listening on " << tcp_acceptor.local_endpoint() << std::endl;
 }
+
 
 ProxyServer::~ProxyServer()
 {
-	acceptor.close();
+	tcp_service.stop();
+
+	tcp_acceptor.close();
+
+	// para o loop serviço para que nenhuma tarefa após esse ponto seja executada.
+	worker_service.stop();
+
+	// aguarda o fim das tarefas em execução
+	threadpool.join_all();
 }
+
+
+void ProxyServer::start_threadpool()
+{
+	std::cout << "Application Server - Start - Loading Thread Pool - Pool size = " << POOL_SIZE << std::endl;
+
+	for (unsigned i = 0; i < POOL_SIZE; i++)
+		threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &worker_service));
+
+	std::cout << "Application Server - End - Loading Thread Pool" << std::endl;
+}
+
 
 void ProxyServer::start()
 {
 	while (true)
 	{
-		boost::asio::ip::tcp::socket* s = new boost::asio::ip::tcp::socket(service);
-		acceptor.accept(*s);
+		boost::asio::ip::tcp::socket* s = new boost::asio::ip::tcp::socket(tcp_service);
+		tcp_acceptor.accept(*s);
 
 		std::cout << "Application Server - New conection from " << s->remote_endpoint() << std::endl;
 
 		std::string message = read_request(s);
 
 		process_request(s, message);
-
-
-		//delete sock;
-		//std::cout << "Connection finished" << endl;
-		//		std::thread t(session,sock);
-		//		t.detach();
 	}
 }
+
 
 std::string ProxyServer::read_request(boost::asio::ip::tcp::socket * socket)
 {
@@ -61,7 +78,10 @@ std::string ProxyServer::read_request(boost::asio::ip::tcp::socket * socket)
 	{
 		std::cerr << "Application Server - process_request - " << e.what() << std::endl;
 	}
+
+	return "ERROR";
 }
+
 
 void ProxyServer::process_request(boost::asio::ip::tcp::socket *socket, std::string message)
 {
@@ -70,22 +90,47 @@ void ProxyServer::process_request(boost::asio::ip::tcp::socket *socket, std::str
 	if (message == "DISCONNECTED")
 	{
 		delete socket;
-		return;
 	}
-
-	if (message == "REQ_ATIVOS")
+	else if (message == "REQ_ATIVOS")
 	{
-		boost::thread t(boost::bind(&ProxyServer::get_active_clients, this, _1), socket);
-		t.detach();
+		worker_service.post(boost::bind(&ProxyServer::get_active_clients, this, socket));
 	}
-	else if ("")
+	else if (message.substr(0, 8) == "REQ_HIST") //REQ_HIST;<ID>;<NUM_AMOSTRAS>
+	{
+		worker_service.post(boost::bind(&ProxyServer::get_historical_data, this, message, socket));
+	}
+	else
 	{
 		delete socket;
 	}
 }
 
+
 void ProxyServer::get_active_clients(boost::asio::ip::tcp::socket *socket)
 {
+	boost::this_thread::sleep(boost::posix_time::millisec(1000));
 
+	std::cout << "Connection finished - " << socket->remote_endpoint() << std::endl;
+	delete socket;
+}
+
+
+void ProxyServer::get_historical_data(const std::string message, boost::asio::ip::tcp::socket *socket)
+{
+	std::vector<std::string> tokens;
+	boost::split(tokens, message, boost::is_any_of(";"));
+
+	historical_data_reply_t reply;
+
+	if (tokens.size() == 3)
+	{
+		historical_data_request_t request;
+		request.id = std::stoi(tokens.at(1));
+		request.num_samples = std::stoi(tokens.at(2));
+
+		reply = historiador.get_historical_data(request);
+	}
+
+	std::cout << "Connection finished - " << socket->remote_endpoint() << std::endl;
 	delete socket;
 }

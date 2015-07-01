@@ -1,6 +1,6 @@
 #pragma once
 
-static const unsigned MAX_POSITION_SAMPLES = 30;
+static const unsigned MAX_POSITION_SAMPLES = 32;
 
 struct position_t
 {
