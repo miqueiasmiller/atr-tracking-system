@@ -12,6 +12,7 @@ class HistClient
 public:
 	HistClient();
 	historical_data_reply_t get_historical_data(const historical_data_request_t &);
+	std::string stringfy(const historical_data_reply_t &);
 
 private:
 	static const char* const request_queue_name;

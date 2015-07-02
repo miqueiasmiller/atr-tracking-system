@@ -1,11 +1,11 @@
 #include "ProxyServer.h"
 
 ProxyServer::ProxyServer(const int & port) :
-	tcp_service(),
-	worker_service(),
-	tcp_acceptor(tcp_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-	worker(worker_service),
-	hist_client()
+tcp_service(),
+worker_service(),
+tcp_acceptor(tcp_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+worker(worker_service),
+hist_client()
 {
 	available_connections = POOL_SIZE;
 
@@ -65,25 +65,11 @@ void ProxyServer::check_connections_pool()
 }
 
 
-//void ProxyServer::start()
-//{
-//	while (true)
-//	{
-//		boost::asio::ip::tcp::socket* s = new boost::asio::ip::tcp::socket(tcp_service);
-//		tcp_acceptor.accept(*s);
-//
-//		std::cout << "Application Server - New conection from " << socket.remote_endpoint() << std::endl;
-//
-//		worker_service.post(boost::bind(&ProxyServer::session, this, std::move(socket)));
-//	}
-//}
-
-
 void ProxyServer::session(boost::asio::ip::tcp::socket* socket)
 {
 	try
 	{
-		while(true)
+		while (true)
 		{
 			std::string message = read_request(socket);
 
@@ -123,93 +109,29 @@ std::string ProxyServer::read_request(boost::asio::ip::tcp::socket * socket)
 	else if (error)
 		throw boost::system::system_error(error); // Some other error.
 
-	std::string message = std::string(data, length);
-
-	std::cout << "Application Server - Message received from " << socket->remote_endpoint() << " - Message: " << message << std::endl;
-
-	return message;
+	return std::string(data, length);
 }
-
-
-//std::string ProxyServer::read_request(boost::asio::ip::tcp::socket * socket)
-//{
-//	try
-//	{
-//		boost::system::error_code error;
-//		char data[MAX_LENGTH];
-//
-//		size_t length = socket->read_some(boost::asio::buffer(data, MAX_LENGTH), error);
-//
-//		if (error == boost::asio::error::eof) // Client has disconnected
-//			return "DISCONNECTED";
-//		else if (error)
-//			throw boost::system::system_error(error); // Some other error.
-//
-//		std::string message = std::string(data, length);
-//
-//		std::cout << "Application Server - Message received from " << socket->remote_endpoint() << " - Message: " << message << std::endl;
-//
-//		return message;
-//	}
-//	catch (std::exception &e)
-//	{
-//		std::cerr << "Application Server - process_request - " << e.what() << std::endl;
-//	}
-//
-//	return "ERROR";
-//}
 
 
 void ProxyServer::process_request(boost::asio::ip::tcp::socket * socket, const std::string & message)
 {
-	std::string response;
-
 	if (message == "REQ_ATIVOS")
-		response = get_active_clients();
+	{
+		std::cout << "Application Server - Message received from " << socket->remote_endpoint() << " - Message: " << message << std::endl;
+		socket->write_some(boost::asio::buffer(get_active_clients()));
+	}
 	else if (message.length() >= 8 && message.substr(0, 8) == "REQ_HIST")
-		response = get_historical_data(message);
-
-	socket->write_some(boost::asio::buffer(response));
+	{
+		std::cout << "Application Server - Message received from " << socket->remote_endpoint() << " - Message: " << message << std::endl;
+		socket->write_some(boost::asio::buffer(get_historical_data(message)));
+	}
 }
-
-
-//void ProxyServer::process_request(boost::asio::ip::tcp::socket *socket, std::string message)
-//{
-//	boost::algorithm::trim(message);
-//
-//	if (message == "DISCONNECTED")
-//	{
-//		std::cerr << "Application Server - Client has disconnected." << socket->remote_endpoint() << std::endl;
-//		delete socket;
-//	}
-//	else if (message == "REQ_ATIVOS")
-//	{
-//		worker_service.post(boost::bind(&ProxyServer::get_active_clients, this, socket));
-//	}
-//	else if (message.substr(0, 8) == "REQ_HIST") //REQ_HIST;<ID>;<NUM_AMOSTRAS>
-//	{
-//		worker_service.post(boost::bind(&ProxyServer::get_historical_data, this, message, socket));
-//	}
-//	else
-//	{
-//		//delete socket;
-//	}
-//}
 
 
 std::string ProxyServer::get_active_clients()
 {
 	return "ATIVOS;0";
 }
-
-
-//void ProxyServer::get_active_clients(boost::asio::ip::tcp::socket *socket)
-//{
-//	boost::this_thread::sleep(boost::posix_time::millisec(300));
-//
-//	std::cout << "Application Server - Connection finished - " << socket->remote_endpoint() << std::endl;
-//	//delete socket;
-//}
 
 
 std::string ProxyServer::get_historical_data(const std::string & message)
@@ -227,31 +149,10 @@ std::string ProxyServer::get_historical_data(const std::string & message)
 
 		reply = hist_client.get_historical_data(request);
 
-		return "";
+		return hist_client.stringfy(reply);
 	}
 	else
 	{
 		return "INVALID REQUEST - " + message;
 	}
 }
-
-
-//void ProxyServer::get_historical_data(const std::string message, boost::asio::ip::tcp::socket *socket)
-//{
-//	std::vector<std::string> tokens;
-//	boost::split(tokens, message, boost::is_any_of(";"));
-//
-//	historical_data_reply_t reply;
-//
-//	if (tokens.size() == 3)
-//	{
-//		historical_data_request_t request;
-//		request.id = std::stoi(tokens.at(1));
-//		request.num_samples = std::stoi(tokens.at(2));
-//
-//		reply = hist_client.get_historical_data(request);
-//	}
-//
-//	std::cout << "Application Server - Connection finished - " << socket->remote_endpoint() << std::endl;
-//	delete socket;
-//}

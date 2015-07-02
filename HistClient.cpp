@@ -1,4 +1,5 @@
 #include "HistClient.h"
+#include <boost/lexical_cast.hpp>
 
 const char* const HistClient::request_queue_name = "servapp_historiador";
 const char* const HistClient::response_queue_name = "historiador_servapp";
@@ -59,4 +60,31 @@ historical_data_reply_t HistClient::read_response_message()
 	}
 
 	return reply;
+}
+
+std::string HistClient::stringfy(const historical_data_reply_t & reply)
+{
+	if (reply.num_samples_available == 0)
+	{
+		return "HIST;0";
+	}
+	else
+	{
+		std::stringstream ss;
+		
+		ss << "HIST;" << reply.num_samples_available;
+		ss << ";" << reply.data[0].header.id;
+
+		for (size_t i = 0; i < reply.num_samples_available; i++)
+		{
+			ss << ";POS";
+			ss << ";" << std::string(reply.data[i].data.timestamp, 14);
+			ss << ";" << boost::lexical_cast<std::string>(reply.data[i].data.latitude);
+			ss << ";" << boost::lexical_cast<std::string>(reply.data[i].data.longitude);
+			ss << ";" << reply.data[i].data.speed;
+			ss << ";" << reply.data[i].data.status ? "1" : "0";
+		}
+
+		return ss.str();
+	}
 }

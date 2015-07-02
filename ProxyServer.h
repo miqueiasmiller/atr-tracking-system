@@ -9,7 +9,7 @@
 #include <string>
 
 static const unsigned MAX_LENGTH = 100;
-static const unsigned POOL_SIZE = 15;
+static const unsigned POOL_SIZE = 30;
 
 class ProxyServer
 {
@@ -30,13 +30,9 @@ private:
 	HistClient hist_client;
 
 	void session(boost::asio::ip::tcp::socket *);
-	//std::string read_request(boost::asio::ip::tcp::socket *);
 	std::string read_request(boost::asio::ip::tcp::socket *);
-	//void process_request(boost::asio::ip::tcp::socket *, std::string);
 	void process_request(boost::asio::ip::tcp::socket *, const std::string &);
-	//void get_active_clients(boost::asio::ip::tcp::socket *);
 	std::string get_active_clients();
-	//void get_historical_data(const std::string, boost::asio::ip::tcp::socket *);
 	std::string get_historical_data(const std::string &);
 	void start_threadpool();
 	void check_connections_pool();
