@@ -74,7 +74,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>COPY $(TargetPath) "C:\Users\miqueias\Documents\TPFinal"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,11 +101,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GatewayClient.h" />
     <ClInclude Include="HistClient.h" />
     <ClInclude Include="HistoricalData.h" />
     <ClInclude Include="ProxyServer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GatewayClient.cpp" />
     <ClCompile Include="HistClient.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ProxyServer.cpp" />

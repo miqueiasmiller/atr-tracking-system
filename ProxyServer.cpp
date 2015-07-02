@@ -7,6 +7,8 @@ tcp_acceptor(tcp_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v
 worker(worker_service),
 hist_client()
 {
+	this->mem_buffer = gateway_client_start();
+
 	available_connections = POOL_SIZE;
 
 	start_threadpool();
@@ -72,6 +74,7 @@ void ProxyServer::session(boost::asio::ip::tcp::socket* socket)
 		while (true)
 		{
 			std::string message = read_request(socket);
+			boost::algorithm::trim(message);
 
 			if (message == "DISCONNECTED")
 			{
@@ -130,7 +133,7 @@ void ProxyServer::process_request(boost::asio::ip::tcp::socket * socket, const s
 
 std::string ProxyServer::get_active_clients()
 {
-	return "ATIVOS;0";
+	return gateway_client_get_data(this->mem_buffer);
 }
 
 
@@ -147,9 +150,16 @@ std::string ProxyServer::get_historical_data(const std::string & message)
 		request.id = std::stoi(tokens.at(1));
 		request.num_samples = std::stoi(tokens.at(2));
 
-		reply = hist_client.get_historical_data(request);
+		if (request.num_samples == 1)
+		{
+			get_active_clients();
+		}
+		else
+		{
+			reply = hist_client.get_historical_data(request);
 
-		return hist_client.stringfy(reply);
+			return hist_client.stringfy(reply);
+		}
 	}
 	else
 	{
