@@ -1,14 +1,13 @@
 #include "ProxyServer.h"
 
-ProxyServer::ProxyServer(const int & port) :
-tcp_service(),
-worker_service(),
-tcp_acceptor(tcp_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-worker(worker_service),
-hist_client()
+ProxyServer::ProxyServer(int const & port) :
+	tcp_service(),
+	worker_service(),
+	tcp_acceptor(tcp_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
+	worker(worker_service),
+	hist_client(),
+	gtw_client()
 {
-	this->mem_buffer = gateway_client_start();
-
 	available_connections = POOL_SIZE;
 
 	start_threadpool();
@@ -116,7 +115,7 @@ std::string ProxyServer::read_request(boost::asio::ip::tcp::socket * socket)
 }
 
 
-void ProxyServer::process_request(boost::asio::ip::tcp::socket * socket, const std::string & message)
+void ProxyServer::process_request(boost::asio::ip::tcp::socket * socket, std::string const & message)
 {
 	if (message == "REQ_ATIVOS")
 	{
@@ -133,11 +132,11 @@ void ProxyServer::process_request(boost::asio::ip::tcp::socket * socket, const s
 
 std::string ProxyServer::get_active_clients()
 {
-	return gateway_client_get_data(this->mem_buffer);
+	return gtw_client.get_ativos();
 }
 
 
-std::string ProxyServer::get_historical_data(const std::string & message)
+std::string ProxyServer::get_historical_data(std::string const & message)
 {
 	std::vector<std::string> tokens;
 	boost::split(tokens, message, boost::is_any_of(";"));
@@ -152,7 +151,9 @@ std::string ProxyServer::get_historical_data(const std::string & message)
 
 		if (request.num_samples == 1)
 		{
-			get_active_clients();
+			reply = gtw_client.get_historico(request.id);
+
+			return hist_client.stringfy(reply);
 		}
 		else
 		{

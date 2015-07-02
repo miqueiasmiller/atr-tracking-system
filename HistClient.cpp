@@ -1,8 +1,8 @@
 #include "HistClient.h"
 #include <boost/lexical_cast.hpp>
 
-const char* const HistClient::request_queue_name = "servapp_historiador";
-const char* const HistClient::response_queue_name = "historiador_servapp";
+char const * const HistClient::request_queue_name = "servapp_historiador";
+char const * const HistClient::response_queue_name = "historiador_servapp";
 boost::mutex HistClient::m;
 
 HistClient::HistClient() :
@@ -14,7 +14,7 @@ HistClient::HistClient() :
 }
 
 
-historical_data_reply_t HistClient::get_historical_data(const historical_data_request_t & request)
+historical_data_reply_t HistClient::get_historical_data(historical_data_request_t const & request)
 {
 	boost::lock_guard<boost::mutex> lock(m);
 
@@ -24,7 +24,7 @@ historical_data_reply_t HistClient::get_historical_data(const historical_data_re
 }
 
 
-void HistClient::write_request_message(const historical_data_request_t & request)
+void HistClient::write_request_message(historical_data_request_t const & request)
 {
 	if (request.num_samples > 1 && request.num_samples <= MAX_POSITION_SAMPLES)
 	{
@@ -62,7 +62,7 @@ historical_data_reply_t HistClient::read_response_message()
 	return reply;
 }
 
-std::string HistClient::stringfy(const historical_data_reply_t & reply)
+std::string HistClient::stringfy(historical_data_reply_t const & reply)
 {
 	if (reply.num_samples_available == 0)
 	{

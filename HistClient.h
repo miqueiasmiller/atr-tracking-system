@@ -11,18 +11,18 @@ class HistClient
 {
 public:
 	HistClient();
-	historical_data_reply_t get_historical_data(const historical_data_request_t &);
-	std::string stringfy(const historical_data_reply_t &);
+	historical_data_reply_t get_historical_data(historical_data_request_t const &);
+	std::string stringfy(historical_data_reply_t const &);
 
 private:
-	static const char* const request_queue_name;
-	static const char* const response_queue_name;
+	static char const * const request_queue_name;
+	static char const * const response_queue_name;
 
 	static boost::mutex m;
 
 	boost::interprocess::message_queue request_queue;
 	boost::interprocess::message_queue response_queue;
 	
-	void write_request_message(const historical_data_request_t &);
+	void write_request_message(historical_data_request_t const &);
 	historical_data_reply_t read_response_message();
 };

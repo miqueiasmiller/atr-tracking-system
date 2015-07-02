@@ -9,13 +9,13 @@
 #include <iostream>
 #include <string>
 
-static const unsigned MAX_LENGTH = 100;
-static const unsigned POOL_SIZE = 30;
+static unsigned const MAX_LENGTH = 100;
+static unsigned const POOL_SIZE = 30;
 
 class ProxyServer
 {
 public:
-	ProxyServer(const int &);
+	ProxyServer(int const &);
 	~ProxyServer();
 	void start();
 
@@ -29,14 +29,14 @@ private:
 	boost::mutex m;
 	boost::thread_group threadpool;
 	HistClient hist_client;
-	shared_memory_buffer* mem_buffer;
+	GatewayClient gtw_client;
+	//shared_memory_buffer* mem_buffer;
 
 	void session(boost::asio::ip::tcp::socket *);
 	std::string read_request(boost::asio::ip::tcp::socket *);
-	void process_request(boost::asio::ip::tcp::socket *, const std::string &);
+	void process_request(boost::asio::ip::tcp::socket *, std::string const &);
 	std::string get_active_clients();
-	std::string get_historical_data(const std::string &);
+	std::string get_historical_data(std::string const &);
 	void start_threadpool();
 	void check_connections_pool();
 };
-
