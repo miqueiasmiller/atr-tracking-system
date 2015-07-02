@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HistClient.h"
+#include "GatewayClient.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -28,6 +29,7 @@ private:
 	boost::mutex m;
 	boost::thread_group threadpool;
 	HistClient hist_client;
+	shared_memory_buffer* mem_buffer;
 
 	void session(boost::asio::ip::tcp::socket *);
 	std::string read_request(boost::asio::ip::tcp::socket *);
