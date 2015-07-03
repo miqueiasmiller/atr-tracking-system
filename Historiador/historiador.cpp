@@ -55,7 +55,7 @@ int main()
 		thread_count++;
 		com_thread.push_back(thread(server_communication));
 		thread_count++;
-		
+
 		while (j<thread_count) 
 		{
 			com_thread[j].join();
@@ -142,12 +142,11 @@ void server_communication()
 int write_file(position_t t) 
 {
 	unique_lock<mutex> lock(m); //Uso de mutex para fazer com que a escrita dos dados seja uma seção crítica
-	char file_name[20]; 
-	itoa(t.header.id, file_name, 5); //Conversão do id do celular para o formato char
-	char* name = file_name; 
-	strcat(name, ".dat"); //Arquivo nomeado com o número de identificação do celular
 
-	fstream arquivo(name, fstream::out | fstream::in | fstream::binary | fstream::app); 
+	stringstream file_name;
+	file_name << to_string(t.header.id) << ".dat";
+
+	fstream arquivo(file_name.str(), fstream::out | fstream::in | fstream::binary | fstream::app); 
 	if (arquivo.is_open())
 	{
 		arquivo.write((char*)&t, sizeof(position_t));
@@ -155,7 +154,7 @@ int write_file(position_t t)
 	}
 	else
 	{
-	printf ("\nNao foi possivel abrir o arquivo!\n"); 
+		printf ("\nNao foi possivel abrir o arquivo!\n"); 
 	}
 	return(0);
 }
@@ -164,16 +163,14 @@ int write_file(position_t t)
 int read_file(historical_data_request_t serv_hist_)
 {
 	unique_lock<mutex> lock(m); //Uso de mutex para fazer com que a leitura dos dados seja uma seção crítica
-	char file_name_2[20]; 
-	itoa(serv_hist_.id, file_name_2, 5);
-	char* name_2 = file_name_2; 
-	strcat(name_2, ".dat");
+	stringstream file_name;
+	file_name << to_string(serv_hist_.id) << ".dat";
 
 	int counter = 0; //Contador de bytes char; 
 	char c; 
-	
+
 	/* Abre o arquivo para descobrir seu tamanho */
-	fstream arquivo(name_2, fstream::out | fstream::in | fstream::binary | fstream::app);
+	fstream arquivo(file_name.str(), fstream::out | fstream::in | fstream::binary | fstream::app);
 	if (arquivo.is_open())
 	{
 		while (arquivo.get(c)) //Descobre o tamanho do arquivo
@@ -181,38 +178,32 @@ int read_file(historical_data_request_t serv_hist_)
 			counter++;
 		}
 	}
-		
+
 	int num_rec = counter / sizeof(position_t); //Descobre a quantidade de linhas no arquivo lido 
 	arquivo.close();
-	
+
 	/* Abre o arquivo para leitura */
-	fstream arquivo2(name_2, fstream::out | fstream::in | fstream::binary | fstream::app); 
+	fstream arquivo2(file_name.str(), fstream::out | fstream::in | fstream::binary | fstream::app); 
 	if (arquivo2.is_open())
 	{
+		int num_samples = serv_hist_.num_samples;
+		
+		if (num_samples > 30)
+			num_samples = 30;
+
 		/*As condições abaixão verificam a quantidade de dados históricos disponíveis. Vale lembrar que o número máx de posições retornadas é 30*/
-		if (num_rec > serv_hist_.num_samples) 
+		if (num_rec >= num_samples) 
 		{
-			arquivo2.seekp((num_rec - serv_hist_.num_samples) * sizeof(position_t));
-			num_rec = serv_hist_.num_samples;
-		}
-		else
-		{
-			num_rec = serv_hist_.num_samples;
+			arquivo2.seekp((num_rec - num_samples) * sizeof(position_t));
+			num_rec = num_samples;
 		}
 
-		if (serv_hist_.num_samples > 30)
-		{
-			arquivo2.seekp(30 * sizeof(position_t));
-			num_rec = 30;
-		}
-		
 		/*Número de dados que serão retornados*/
 		historico_servidor.num_samples_available = num_rec;
 
 		/*O loop abaixo carrega a quantidade de dados requisitados em uma variável para ser enviada ao servidor da aplicação*/
 		for (int i = 0; i < num_rec; ++i)
 		{
-
 			arquivo2.read((char*)&historico_servidor.data[i], sizeof(position_t));
 		}
 
@@ -226,5 +217,3 @@ int read_file(historical_data_request_t serv_hist_)
 	}
 	return(0);
 }
-
-

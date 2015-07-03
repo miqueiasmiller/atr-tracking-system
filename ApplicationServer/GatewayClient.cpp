@@ -53,7 +53,7 @@ string GatewayClient::Usuarios_Ativos() {
 
 string GatewayClient::get_ativos()
 {
-	boost::mutex m;
+	static boost::mutex m;
 	boost::unique_lock<boost::mutex> lock(m);
 
 	data->mutex.lock();
@@ -77,7 +77,7 @@ string GatewayClient::get_ativos()
 
 historical_data_reply_t GatewayClient::get_historico(int const id)
 {
-	boost::mutex m;
+	static boost::mutex m;
 	boost::unique_lock<boost::mutex> lock(m);
 
 	data->mutex.lock();
@@ -85,7 +85,7 @@ historical_data_reply_t GatewayClient::get_historico(int const id)
 	try
 	{
 		historical_data_reply_t reply;
-		reply.num_samples_available = 0;
+		reply.num_samples_available = 0;	
 
 		int n = data->LIST_SIZE;
 
@@ -100,8 +100,8 @@ historical_data_reply_t GatewayClient::get_historico(int const id)
 				reply.data[0].data.speed = data->list[i].data.speed;
 				reply.data[0].data.status = data->list[i].data.status;
 
-				strncpy(reply.data[0].header.imei, data->list[i].header.imei, 16);
-				strncpy(reply.data[0].data.timestamp, data->list[i].data.timestamp, 16);
+				strncpy_s(reply.data[0].header.imei, data->list[i].header.imei, 16);
+				strncpy_s(reply.data[0].data.timestamp, data->list[i].data.timestamp, 16);
 
 				break;
 			}

@@ -75,7 +75,7 @@ std::string HistClient::stringfy(historical_data_reply_t const & reply)
 		ss << "HIST;" << reply.num_samples_available;
 		ss << ";" << reply.data[0].header.id;
 
-		for (size_t i = 0; i < reply.num_samples_available; i++)
+		for (int i = 0; i < reply.num_samples_available; i++)
 		{
 			ss << ";POS";
 			ss << ";" << std::string(reply.data[i].data.timestamp, 14);
