@@ -58,7 +58,7 @@ void ProxyServer::check_connections_pool()
 	boost::unique_lock<boost::mutex> lock(m);
 	while (available_connections <= 0)
 	{
-		std::cout << "Application Server - Maximun number of connections reached" << std::endl;
+		std::cout << "Application Server - Maximun number of connections reach" << std::endl;
 		cv.wait(lock);
 	}
 
@@ -86,7 +86,7 @@ void ProxyServer::session(boost::asio::ip::tcp::socket* socket)
 	}
 	catch (std::exception &e)
 	{
-		std::cerr << "Application Server - session error - " << e.what() << std::endl;
+		std::cerr << "Application Server - Session error - " << e.what() << std::endl;
 	}
 
 	if (socket->is_open())

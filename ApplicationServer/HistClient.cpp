@@ -55,7 +55,7 @@ historical_data_reply_t HistClient::read_response_message()
 
 	if (received_size != sizeof(reply))
 	{
-		std::string msg = "A mensagem retornado pelo historiador é inválida.";
+		std::string msg = "A mensagem retornada pelo historiador é inválida.";
 		throw std::exception(msg.c_str());
 	}
 

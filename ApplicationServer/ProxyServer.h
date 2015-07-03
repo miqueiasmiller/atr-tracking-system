@@ -30,7 +30,6 @@ private:
 	boost::thread_group threadpool;
 	HistClient hist_client;
 	GatewayClient gtw_client;
-	//shared_memory_buffer* mem_buffer;
 
 	void session(boost::asio::ip::tcp::socket *);
 	std::string read_request(boost::asio::ip::tcp::socket *);

@@ -1,18 +1,17 @@
 #pragma once
 
 #include "GatewayClient.h"
-#include <boost/thread/shared_mutex.hpp>
 
 using namespace boost::interprocess;
 using namespace std;
 
 GatewayClient::GatewayClient() : 
-	shm(open_only, "usuariosAtivos", read_only),
-	region(shm, read_only)
+	shm(open_only, "usuariosAtivos", read_write),
+	region(shm, read_write)
 {
 	data = static_cast<shared_memory_buffer*>(region.get_address());
 
-	std::cout << "Application Server - Shared Memory opened." << std::endl;
+	cout << "Application Server - Shared Memory opened." << endl;
 }
 
 
@@ -54,55 +53,70 @@ string GatewayClient::Usuarios_Ativos() {
 
 string GatewayClient::get_ativos()
 {
-	//boost::unique_lock<boost::interprocess::interprocess_mutex> lock(data->mutex);
-	//boost::interprocess::sharable_lock<boost::interprocess::interprocess_mutex> lock(data->mutex);
-	//boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(data->mutex);
-
-	//boost::shared_mutex sm;
-
 	boost::mutex m;
 	boost::unique_lock<boost::mutex> lock(m);
 
 	data->mutex.lock();
 
-	string response(Usuarios_Ativos());
+	try
+	{
+		string response(Usuarios_Ativos());
 
-	data->mutex.unlock();
+		data->mutex.unlock();
 
-	return response;
+		return response;
+	}
+	catch (exception &e)
+	{
+		data->mutex.unlock();
+
+		cerr << "Application Server - get_ativos - " << e.what() << endl;
+	}
 }
-
 
 
 historical_data_reply_t GatewayClient::get_historico(int const id)
 {
-	// travar mutex...
+	boost::mutex m;
+	boost::unique_lock<boost::mutex> lock(m);
 
+	data->mutex.lock();
 
-	historical_data_reply_t reply;
-	reply.num_samples_available = 0;
-
-	int n = data->LIST_SIZE;
-
-	for (int i = 0; i < n; i++)
+	try
 	{
-		if (data->list[i].header.id == id)
+		historical_data_reply_t reply;
+		reply.num_samples_available = 0;
+
+		int n = data->LIST_SIZE;
+
+		for (int i = 0; i < n; i++)
 		{
-			reply.num_samples_available = 1;
-			reply.data[0].header.id = data->list[i].header.id;
-			reply.data[0].data.latitude = data->list[i].data.latitude;
-			reply.data[0].data.longitude = data->list[i].data.longitude;
-			reply.data[0].data.speed = data->list[i].data.speed;
-			reply.data[0].data.status = data->list[i].data.status;
+			if (data->list[i].header.id == id)
+			{
+				reply.num_samples_available = 1;
+				reply.data[0].header.id = data->list[i].header.id;
+				reply.data[0].data.latitude = data->list[i].data.latitude;
+				reply.data[0].data.longitude = data->list[i].data.longitude;
+				reply.data[0].data.speed = data->list[i].data.speed;
+				reply.data[0].data.status = data->list[i].data.status;
 
-			strncpy(reply.data[0].header.imei, data->list[i].header.imei, 16);
-			strncpy(reply.data[0].data.timestamp, data->list[i].data.timestamp, 16);
+				strncpy(reply.data[0].header.imei, data->list[i].header.imei, 16);
+				strncpy(reply.data[0].data.timestamp, data->list[i].data.timestamp, 16);
 
-			break;
+				break;
+			}
 		}
-	}
 
-	return reply;
+		data->mutex.unlock();
+
+		return reply;
+	}
+	catch (exception &e)
+	{
+		data->mutex.unlock();
+
+		cerr << "Application Server - get_historico - " << e.what() << endl;
+	}
 }
 
 //int _tmain(int argc, _TCHAR* argv[])
