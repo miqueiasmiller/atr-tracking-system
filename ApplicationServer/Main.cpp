@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[])
 {
-	int port = 902;
+	int port = 9002;
 
 	if (argc == 2)
 	{
