@@ -3,6 +3,7 @@
 #include "HistoricalData.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/locks.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <exception>
 #include <string>

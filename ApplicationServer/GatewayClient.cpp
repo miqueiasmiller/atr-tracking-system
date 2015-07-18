@@ -9,7 +9,7 @@ GatewayClient::GatewayClient() :
 	shm(open_only, "usuariosAtivos", read_write),
 	region(shm, read_write)
 {
-	data = static_cast<shared_memory_buffer*>(region.get_address());
+	data = static_cast<active_users_t*>(region.get_address());
 
 	cout << "Application Server - Shared Memory opened." << endl;
 }
@@ -118,42 +118,3 @@ historical_data_reply_t GatewayClient::get_historico(int const id)
 		cerr << "Application Server - get_historico - " << e.what() << endl;
 	}
 }
-
-//int _tmain(int argc, _TCHAR* argv[])
-//{
-//	string Lista_Ativos;
-//
-//
-//	//Create a shared memory object.
-//	shared_memory_object shm
-//		(open_only                    // open only
-//		, "UsuariosAtivos"              //name
-//		, read_write  //read-write mode
-//		);
-//
-//	//Map the whole shared memory in this process
-//	mapped_region region
-//		(shm                       //What to map
-//		, read_write //Map it as read-write
-//		);
-//
-//	//Get the address of the mapped region
-//	void * addr = region.get_address();
-//
-//	//Obtain the shared structure
-//	shared_memory_buffer * data = static_cast<shared_memory_buffer*>(addr);
-//
-//	while (true)
-//
-//	{
-//		data->mutex.lock();
-//		Lista_Ativos = Usuarios_Ativos(*data);
-//		cout << Lista_Ativos << endl;
-//		cout << "REQ_ATIVOS : " << Lista_Ativos << endl;
-//
-//		data->mutex.unlock();
-//	}
-//
-//	system("PAUSE");
-//	return 0;
-//}

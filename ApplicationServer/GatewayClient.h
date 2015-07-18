@@ -1,16 +1,11 @@
+#pragma once
+
 #include "HistoricalData.h"
 #include <string>
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/thread.hpp>
-
-
-//std::string Usuarios_Ativos(shared_memory_buffer &);
-//shared_memory_buffer* gateway_client_start();
-//void gateway_client_start(shared_memory_buffer *);
-//std::string gateway_client_get_data(shared_memory_buffer *);
-
 
 class GatewayClient
 {
@@ -22,7 +17,7 @@ public:
 private:
 	boost::interprocess::shared_memory_object shm;
 	boost::interprocess::mapped_region region;
-	shared_memory_buffer* data;
+	active_users_t* data;
 
 	std::string Usuarios_Ativos();
 };

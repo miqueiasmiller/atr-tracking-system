@@ -1,5 +1,4 @@
 #include "HistClient.h"
-#include <boost/lexical_cast.hpp>
 
 char const * const HistClient::request_queue_name = "servapp_historiador";
 char const * const HistClient::response_queue_name = "historiador_servapp";

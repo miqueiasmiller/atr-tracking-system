@@ -1,9 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Historiador", "Historiador\Historiador.vcxproj", "{5369AD92-49E3-4CDA-9DC1-C6A8F9524BCB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApplicationServer", "ApplicationServer\ApplicationServer.vcxproj", "{7C350359-D003-41A2-952D-E58D39699CDC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gateway", "Gateway\Gateway.vcxproj", "{ABCB2220-16FC-46B5-B079-A3856BA2038B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D3CA640A-307E-48EA-9B3A-180692E0F93D}"
+	ProjectSection(SolutionItems) = preProject
+		HistoricalData.h = HistoricalData.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +34,12 @@ Global
 		{7C350359-D003-41A2-952D-E58D39699CDC}.Release|Win32.ActiveCfg = Release|Win32
 		{7C350359-D003-41A2-952D-E58D39699CDC}.Release|Win32.Build.0 = Release|Win32
 		{7C350359-D003-41A2-952D-E58D39699CDC}.Release|x64.ActiveCfg = Release|Win32
+		{ABCB2220-16FC-46B5-B079-A3856BA2038B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ABCB2220-16FC-46B5-B079-A3856BA2038B}.Debug|Win32.Build.0 = Debug|Win32
+		{ABCB2220-16FC-46B5-B079-A3856BA2038B}.Debug|x64.ActiveCfg = Debug|Win32
+		{ABCB2220-16FC-46B5-B079-A3856BA2038B}.Release|Win32.ActiveCfg = Release|Win32
+		{ABCB2220-16FC-46B5-B079-A3856BA2038B}.Release|Win32.Build.0 = Release|Win32
+		{ABCB2220-16FC-46B5-B079-A3856BA2038B}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

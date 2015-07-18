@@ -23,19 +23,19 @@ struct position_t
 
 struct historical_data_request_t
 {
-	int id; // identificador do dispositivo
-	int num_samples; // quantidade de amostras solicitadas
+	int id;
+	int num_samples;
 };
 
 struct historical_data_reply_t
 {
-	int num_samples_available; // número de amostras disponibilizadas
-	position_t data[MAX_POSITION_SAMPLES]; // vetor de amostras
+	int num_samples_available;
+	position_t data[MAX_POSITION_SAMPLES];
 };
 
-struct shared_memory_buffer
+struct active_users_t
 {
-	shared_memory_buffer() : num_active_users(0)
+	active_users_t() : num_active_users(0)
 	{
 		for (unsigned i = 0; i < LIST_SIZE; ++i)
 		{
